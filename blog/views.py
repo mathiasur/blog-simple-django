@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import View
+from django.views.generic import View, UpdateView
 from .forms import PostCreateForm
 from .models import Post
+from django.urls import reverse_lazy
 
 class BlogListView(View):
     def get(self, request, *args, **kwargs):
@@ -40,3 +41,12 @@ class PostDetailView(View):
             'post': post
         }
         return render(request, 'post_detail.html', context)
+    
+class PostUpdateView(UpdateView):
+    model = Post
+    fields = ['title', 'content']
+    template_name = 'post_update.html'
+
+    def get_success_url(self) -> str:
+        pk = self.kwargs['pk']
+        return reverse_lazy('blog:detail', kwargs={'pk':pk})
